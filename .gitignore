@@ -1,0 +1,93 @@
+# Start: Default
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/vendor
+.env
+.env.backup
+.env.production
+.phpactor.json
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/auth.json
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+# End: Default
+
+#**************************************************************************************************************************************************************************#
+#**************************************************************************************************************************************************************************#
+
+# Start: Based on research
+# Node modules and dependencies
+node_modules/
+npm-debug.log
+yarn.lock
+pnpm-lock.yaml
+
+# Laravel vendor and caches
+/vendor
+/bootstrap/cache/*
+!bootstrap/cache/.gitignore  # Allow directory but ignore contents
+
+# Laravel storage (keep structure but ignore files)
+storage/*
+!storage/app/
+!storage/framework/
+!storage/logs/
+!storage/framework/cache/
+!storage/framework/sessions/
+!storage/framework/views/
+!storage/logs/.gitignore  # Keep directory structure
+
+# Environment files (DO NOT COMMIT SECRETS)
+.env
+.env.backup
+.env.production
+/.phpunit.result.cache
+
+# IDE and system files
+/.idea/
+/.vscode/
+/.DS_Store
+Thumbs.db
+
+# Logs and caches
+*.log
+storage/logs/
+storage/framework/cache/data/
+
+# Composer dependencies
+composer.lock
+
+# Vue.js build files (ignore development builds)
+public/hot
+public/storage
+/public/mix-manifest.json
+/public/build/
+public/js/*.map
+public/css/*.map
+
+# Database files (if using SQLite)
+*.sql
+*.sqlite
+
+# Docker (if applicable)
+.docker/
+docker-compose.override.yml  # Keep the base docker-compose.yml
+docker-compose.dev.yml  # Ignore dev-specific configs
+
+# Miscellaneous
+*.swp
+*.swo
+
+# End: Based on research
