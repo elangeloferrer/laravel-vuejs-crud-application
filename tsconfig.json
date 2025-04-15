@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "node",
+    "types": ["vue-router", "node", "vite/client"],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  }
+}
