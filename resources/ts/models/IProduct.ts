@@ -1,9 +1,11 @@
 export interface IProduct {
-  id?: number;
-  role_id?: number;
+  id?: string;
   name: string;
-  username: string;
-  email: string;
-  password: String;
-  images: [];
+  category: string;
+  description: string;
+  datetime: string;
+  product_images?: File[];
+
+  new_images?: File[];
+  removed_image_ids?: string[];
 }

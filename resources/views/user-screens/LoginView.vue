@@ -21,11 +21,16 @@
           type="password"
           placeholder="Password"
           class="w-full border-b-2 border-gray-500 bg-transparent px-4 py-2 text-white focus:border-blue-500 focus:outline-none"
+          @keyup.enter="login"
         />
       </div>
       <div class="mb-6 text-left text-white">
         <label>
-          <input type="checkbox" v-model="input.remember" />
+          <input
+            type="checkbox"
+            v-model="input.remember"
+            @keyup.enter="login"
+          />
           Remember Me
         </label>
       </div>
@@ -42,7 +47,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from "vue";
-import { authenticate } from "../../ts/api/users";
+import { authenticate, refreshToken } from "../../ts/api/users";
 
 import { save as saveToStore } from "../../ts/local-storage";
 import router from "../../ts/router";
@@ -75,12 +80,13 @@ export default defineComponent({
       if (response !== undefined && response.status === 401) {
       } else if (response !== undefined && response.status === 200) {
         saveToStore("logged", {
-          username_or_email: response.data.data.user.username_or_email,
+          username: response.data.data.user.username,
           role: response.data.data.user.role,
-          access_token: response.data.data.token,
+          access_token: response.data.data.access_token,
+          refresh_token: response.data.data.refresh_token,
         });
         router.push({
-          name: "dashboard",
+          name: "products",
         });
       }
     };

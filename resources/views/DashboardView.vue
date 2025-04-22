@@ -43,7 +43,7 @@
               :key="index"
               class="mt-4 mb-4 ml-4"
             >
-              <router-link :to="item.path || ''" v-if="isSidebarOpen">
+              <router-link :to="{ name: item.path }" v-if="isSidebarOpen">
                 <a
                   href="#"
                   class="flex items-center space-x-4 text-black hover:text-blue-400"
@@ -58,7 +58,7 @@
 
         <!-- Bottom Logout Button -->
         <div class="flex items-center text-black hover:text-blue-400">
-          <button class="flex space-x-3">
+          <button @click.prevent="logout" class="flex space-x-3">
             <Icon icon="material-symbols:logout" class="text-xl" />
             <span v-if="isSidebarOpen">Logout</span>
           </button>
@@ -84,13 +84,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, onUnmounted } from "vue";
+import { defineComponent, ref } from "vue";
 import { useRoute } from "vue-router";
+import { useStore } from "vuex";
+
+import api from "../ts/api/api";
+import router from "../ts/router";
+import { remove as removeFromStore } from "../ts/local-storage";
 
 import { useMoment } from "../ts/utils/useMoment";
 
 export default defineComponent({
   setup() {
+    const store = useStore();
     const route = useRoute();
     const moment = useMoment();
 
@@ -107,15 +113,27 @@ export default defineComponent({
         isLink: true,
         children: [],
       },
+      {
+        name: "Videos Link",
+        path: "videos-link",
+        icon: "bxs:videos",
+        isOpen: false,
+        isLink: true,
+        children: [],
+      },
     ]);
 
     const toggleSidebar = () => {
       isSidebarOpen.value = !isSidebarOpen.value;
     };
 
-    onMounted(async () => {});
-
-    onUnmounted(() => {});
+    const logout = () => {
+      store.dispatch("productManagement/resetSate");
+      removeFromStore("logged");
+      localStorage.clear();
+      api.cancel();
+      router.push("/");
+    };
 
     return {
       route,
@@ -124,6 +142,7 @@ export default defineComponent({
       yearNow,
 
       toggleSidebar,
+      logout,
     };
   },
 });
