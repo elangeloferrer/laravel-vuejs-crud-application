@@ -8,4 +8,5 @@ export interface GlobalState {
   product: IProduct;
 
   pagination: [];
+  productPageFilters: [];
 }

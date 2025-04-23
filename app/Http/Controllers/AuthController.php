@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 
 use App\Http\Resources\UserResource;
 use App\Facades\TokenAuthFacade;
@@ -11,6 +13,7 @@ use App\Facades\TokenAuthFacade;
 use App\Helpers\Utils;
 
 use App\Models\User;
+use App\Models\RefreshToken;
 
 class AuthController extends Controller
 {
@@ -39,14 +42,57 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
-        $token = TokenAuthFacade::generateToken($user, $request->remember);
+
+        // Generate access token and refresh token
+        $accessToken = TokenAuthFacade::generateToken($user, $request->remember);
+
+
+        $refreshToken = Str::random(64);
+        RefreshToken::insert([
+            'user_id' => $user->id,
+            'token' => hash('sha256', $refreshToken),
+            'expires_at' => Carbon::now()->addDays(7),
+        ]);
 
         $data = [
-            'token' => $token,
+            'access_token' => $accessToken,
+            'refresh_token' => $refreshToken,
             'user' => new UserResource($user)
         ];
 
 
         return Utils::apiResponse(true, "Successful login!", $data);
+    }
+
+    public function refreshToken(Request $request)
+    {
+        $refreshToken = $request->refresh_token;
+
+        if (!$refreshToken) {
+            return Utils::apiResponseWithError("Refresh token required", 400);
+        }
+
+        $hashedToken = hash('sha256', $refreshToken);
+
+        $tokenRecord = RefreshToken::where('token', $hashedToken)
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$tokenRecord) {
+            return Utils::apiResponseWithError("Invalid or expired refresh token", 401);
+        }
+
+        $user = User::find($tokenRecord->user_id);
+
+        // Generate new Access Token
+        $newAccessToken = TokenAuthFacade::generateToken($user);
+
+        $data = [
+            'access_token' => $newAccessToken,
+            'refresh_token' => $refreshToken,
+            'user' => new UserResource($user)
+        ];
+
+        return Utils::apiResponse(true, "Refresh token success", $data);
     }
 }

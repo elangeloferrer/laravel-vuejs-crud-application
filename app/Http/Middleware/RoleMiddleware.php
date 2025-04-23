@@ -35,6 +35,8 @@ class RoleMiddleware
             }
 
             $request->attributes->set('user', $decoded);
+        } catch (\Firebase\JWT\ExpiredException $e) {
+            return Utils::apiResponseWithError('Token expired. Please refresh your token.', 401);
         } catch (Exception $e) {
             return Utils::apiResponseWithError('Invalid token', 401);
         }

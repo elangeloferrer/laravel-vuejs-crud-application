@@ -1,0 +1,71 @@
+/* Heading styles */
+.tiptap h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.tiptap h2 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.tiptap h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.tiptap h4 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.tiptap h5 {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.tiptap h6 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Paragraphs and lists for clean spacing */
+.tiptap p,
+.tiptap ul,
+.tiptap ol {
+  margin-bottom: 1rem;
+}
+
+.tiptap ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.tiptap ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+
+.tiptap blockquote {
+  border-left: 4px solid #60a5fa;
+  padding-left: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  color: #374151;
+  font-style: italic;
+  background-color: #f3f4f6;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}

@@ -16,7 +16,8 @@ class TokenAuthFacade
             'email' => $user->email,
             'role' => $user->role->code,
             'iat' => Carbon::now()->timestamp,
-            'exp' => ($remember) ? Carbon::now()->addDays(30)->timestamp : Carbon::now()->addMinutes(1)->timestamp, // if $remember is TRUE, token expires in 30days else in 1hour
+            'exp' => ($remember) ? Carbon::now()->addDays(3)->timestamp : Carbon::now()->addHours(1)->timestamp, // if $remember is TRUE, token expires in 3days else in 1hour
+
         ];
 
         $privateKey = config('jwt.private-key.pbe-jwt');
