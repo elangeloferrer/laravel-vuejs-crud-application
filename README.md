@@ -37,10 +37,10 @@ npm install
 
 ## 4. Create private and public keys
 
-##### Go to `storage/keys` folder
+##### Go to `./storage/keys` folder
 
 ```bash
-cd storage/keys
+cd ./storage/keys
 ```
 
 ##### Generate a 2048-bit private key
@@ -57,13 +57,19 @@ openssl rsa -pubout -in jwtRS256.key -out jwtRS256.key.pub
 
 ## 5. Environment Setup
 
+##### Go back to root folder then copy .env.example
+
+```bash
+cd ../..
+```
+
 ```bash
 cp .env.example .env
 ```
 
 Edit the .env file and set your database credentials and app URL.
 
-Generate the application key:
+##### Generate the application key
 
 ```bash
 php artisan key:generate

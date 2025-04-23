@@ -43,6 +43,7 @@ pnpm-lock.yaml
 storage/*
 !storage/app/
 !storage/framework/
+!storage/keys/
 !storage/logs/
 !storage/framework/cache/
 !storage/framework/sessions/
