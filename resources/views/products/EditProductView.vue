@@ -59,12 +59,11 @@
 
       <div>
         <label class="mb-1 block text-sm text-black">Description</label>
-        <textarea
+        <EditorContent
           v-model="form.description"
-          class="w-full rounded-xl border px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          rows="5"
-          placeholder="Enter product description"
-        ></textarea>
+          @update-model-value="updateDescriptionValue"
+          :updatedModelValue="form.description"
+        />
       </div>
     </div>
 
@@ -234,9 +233,15 @@ import router from "../../ts/router";
 import { deleteProductImage } from "../../ts/api/products";
 import { editProduct } from "../../ts/api/products";
 
+import EditorContent from "../../components/EditorContent.vue";
+
 import { IProduct } from "../../ts/models/IProduct";
 
 export default defineComponent({
+  components: {
+    EditorContent,
+  },
+
   props: {
     productId: {
       type: String,
@@ -291,6 +296,10 @@ export default defineComponent({
     const product = computed(
       () => store.getters["productManagement/getProductToUpdate"],
     );
+
+    const updateDescriptionValue = (modelValue) => {
+      form.value.description = modelValue;
+    };
 
     const prevStep = () => {
       if (currentStep.value > 0) {
@@ -493,6 +502,7 @@ export default defineComponent({
       handleDragLeave,
       handleDrop,
       removeFile,
+      updateDescriptionValue,
 
       goBack,
       prevStep,

@@ -62,12 +62,10 @@
 
       <div>
         <label class="mb-1 block text-sm text-black">Description</label>
-        <textarea
+        <EditorContent
           v-model="form.description"
-          class="w-full rounded-xl border px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          rows="5"
-          placeholder="Enter product description"
-        ></textarea>
+          @update-model-value="updateDescriptionValue"
+        />
       </div>
     </div>
 
@@ -229,7 +227,13 @@ import router from "../../ts/router";
 import { IProduct } from "../../ts/models/IProduct";
 import { addProduct } from "../../ts/api/products";
 
+import EditorContent from "../../components/EditorContent.vue";
+
 export default defineComponent({
+  components: {
+    EditorContent,
+  },
+
   setup() {
     const store = useStore();
     const route = useRoute();
@@ -273,6 +277,10 @@ export default defineComponent({
 
       return false;
     });
+
+    const updateDescriptionValue = (modelValue) => {
+      form.value.description = modelValue;
+    };
 
     const prevStep = () => {
       if (currentStep.value > 0) {
@@ -429,6 +437,7 @@ export default defineComponent({
       handleDrop,
       removeFile,
       addNewProduct,
+      updateDescriptionValue,
 
       goBack,
       prevStep,

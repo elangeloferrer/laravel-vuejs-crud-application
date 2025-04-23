@@ -35,7 +35,27 @@ composer install
 npm install
 ```
 
-## 4. Environment Setup
+## 4. Create private and public keys
+
+##### Go to `storage/keys` folder
+
+```bash
+cd storage/keys
+```
+
+##### Generate a 2048-bit private key
+
+```bash
+openssl genpkey -algorithm RSA -out jwtRS256.key -pkeyopt rsa_keygen_bits:2048
+```
+
+##### Generate the corresponding public key
+
+```bash
+openssl rsa -pubout -in jwtRS256.key -out jwtRS256.key.pub
+```
+
+## 5. Environment Setup
 
 ```bash
 cp .env.example .env
@@ -49,19 +69,19 @@ Generate the application key:
 php artisan key:generate
 ```
 
-## 5. Run Migrations (Optional: with Seeders)
+## 6. Run Migrations (Optional: with Seeders)
 
 ```bash
 php artisan migrate --seed
 ```
 
-## 6. Compile Frontend Assets
+## 7. Compile Frontend Assets
 
 ```bash
 npm run dev
 ```
 
-## 7. Start Laravel Development Server
+## 8. Start Laravel Development Server
 
 ```bash
 php artisan serve
