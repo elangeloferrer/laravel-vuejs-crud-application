@@ -19,7 +19,10 @@ Make sure you have the following installed:
 ## 1. Clone the Project
 
 ```bash
-https://github.com/elangeloferrer/praxxys-backend-exam.git
+git clone https://github.com/elangeloferrer/praxxys-backend-exam.git
+```
+
+```bash
 cd praxxys-backend-exam
 ```
 
