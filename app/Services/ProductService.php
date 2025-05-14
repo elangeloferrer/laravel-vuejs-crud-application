@@ -83,7 +83,10 @@ class ProductService implements ProductServiceInterface
     {
         try {
             $product = $this->productRepository->findById($id);
-            $product = $this->productRepository->delete($product->id);
+            $imagePaths = $product->product_images->pluck('image_path')->all();
+            Storage::disk('public')->delete($imagePaths);
+            $this->productImageRepository->multipleDeleteByMultipleValue('product_id', [$id]);
+            $this->productRepository->delete($product->id);
 
             return Utils::apiResponse(true, "Successfully deleted product");
         } catch (\Throwable $th) {

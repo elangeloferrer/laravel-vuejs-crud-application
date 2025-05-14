@@ -19,11 +19,11 @@ Make sure you have the following installed:
 ## 1. Clone the Project
 
 ```bash
-git clone https://github.com/elangeloferrer/praxxys-backend-exam.git
+git clone https://github.com/elangeloferrer/laravel-vuejs-crud-application.git
 ```
 
 ```bash
-cd praxxys-backend-exam
+cd laravel-vuejs-crud-application
 ```
 
 ## 2. Install PHP Dependencies

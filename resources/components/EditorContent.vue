@@ -268,7 +268,6 @@ export default defineComponent({
       () => props.updatedModelValue,
       (newValue) => {
         editor.value.commands.setContent(newValue);
-        console.log("eyy", newValue);
       },
     );
 

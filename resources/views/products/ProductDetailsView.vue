@@ -102,15 +102,6 @@ export default defineComponent({
 
     onMounted(() => {
       getProductToView();
-
-      let productPageFilters =
-        store.getters["productManagement/getProductPageFilters"];
-      store.dispatch("productManagement/setProductPageFilters", {
-        keywords: productPageFilters?.keywords || "",
-        category: productPageFilters?.category || "",
-        current_page: productPageFilters?.current_page || 1,
-        per_page: productPageFilters?.per_page || 10,
-      });
     });
 
     return {

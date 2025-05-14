@@ -38,7 +38,7 @@ class AuthController extends Controller
         $user = User::where($field, $usernameOrEmail)->first();
 
         if (!$user || !Auth::attempt([$field => $usernameOrEmail, 'password' => $password])) {
-            return Utils::apiResponseWithError("Unauthorized", 401);
+            return Utils::apiResponseWithError("Username or password is incorrect.", 401);
         }
 
         $user = Auth::user();

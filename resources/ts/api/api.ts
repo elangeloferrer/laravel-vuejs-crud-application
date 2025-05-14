@@ -10,8 +10,7 @@ import { ILoginData } from "../models/ILoginData";
 
 import { handleUnauthorizedResponse } from "./services/handleUnauthorizedResponse";
 
-import { remove as removeFromStore } from "../local-storage";
-import router from "../router";
+import { showErrorToast } from "../utils/toast";
 
 axios.defaults.headers.common["Content-Type"] = "application/json";
 
@@ -39,8 +38,8 @@ const api = (axios: Axios) => {
     },
     (error: AxiosError) => {
       if (error.message === "Network Error" && !error.response) {
-        console.log("Network error ===>", error);
-        // show error notification here
+        showErrorToast("Network error. Please check your connection.");
+        return Promise.reject("Network error. Please check your connection.");
       }
       if (error.response!.status === 401) {
         console.log("401 error ===>", error);
@@ -64,20 +63,72 @@ const api = (axios: Axios) => {
     });
 
   return {
-    get: <T>(url: string, config: any) =>
-      axios
-        .get<T>(url, {
+    get: async <T>(
+      url: string,
+      config: any,
+    ): Promise<{ response?: AxiosResponse<T>; error?: AxiosError }> => {
+      try {
+        const response = await axios.get<T>(url, {
           signal: controller.signal,
           ...config,
           params: config.params,
-        })
-        .then(sleep(100)),
-    post: <T>(url: string, body: object, config?: AxiosRequestConfig) =>
-      axios.post<T>(url, body, config),
-    put: <T>(url: string, body: object, config?: AxiosRequestConfig) =>
-      axios.put<T>(url, body, config).then(sleep(100)),
-    patch: <T>(url: string, body: object) => axios.patch<T>(url, body),
-    delete: <T>(url: string) => axios.delete<T>(url),
+        });
+        await sleep(100)(response);
+        return { response };
+      } catch (error) {
+        return { error: error as AxiosError };
+      }
+    },
+
+    post: async <T>(
+      url: string,
+      body: object,
+      config?: AxiosRequestConfig,
+    ): Promise<{ response?: AxiosResponse<T>; error?: AxiosError }> => {
+      try {
+        const response = await axios.post<T>(url, body, config);
+        return { response };
+      } catch (error) {
+        return { error: error as AxiosError };
+      }
+    },
+
+    put: async <T>(
+      url: string,
+      body: object,
+    ): Promise<{ response?: AxiosResponse<T>; error?: AxiosError }> => {
+      try {
+        const response = await axios.put<T>(url, body);
+        await sleep(100)(response);
+        return { response };
+      } catch (error) {
+        return { error: error as AxiosError };
+      }
+    },
+
+    patch: async <T>(
+      url: string,
+      body: object,
+    ): Promise<{ response?: AxiosResponse<T>; error?: AxiosError }> => {
+      try {
+        const response = await axios.patch<T>(url, body);
+        return { response };
+      } catch (error) {
+        return { error: error as AxiosError };
+      }
+    },
+
+    delete: async <T>(
+      url: string,
+    ): Promise<{ response?: AxiosResponse<T>; error?: AxiosError }> => {
+      try {
+        const response = await axios.delete<T>(url);
+        return { response };
+      } catch (error) {
+        return { error: error as AxiosError };
+      }
+    },
+
     cancel: () => cancelRequests(),
   };
 };

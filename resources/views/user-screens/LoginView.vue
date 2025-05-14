@@ -85,11 +85,19 @@ export default defineComponent({
           access_token: response.data.data.access_token,
           refresh_token: response.data.data.refresh_token,
         });
+
+        saveToStore("latest_notif", {
+          type: "login_notif",
+          is_triggered: false,
+          message: response.data.message,
+        });
+
         router.push({
           name: "products",
         });
       }
     };
+
     return {
       input,
       isValid,
