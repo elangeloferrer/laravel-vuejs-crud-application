@@ -25,7 +25,7 @@ export default defineComponent({
   },
 
   setup(props) {
-    const videoRef = ref(null);
+    const videoRef = ref<HTMLVideoElement | null>(null);
     let player: Player;
 
     const setupPlayer = () => {
@@ -34,6 +34,13 @@ export default defineComponent({
           player.src({ type: "video/mp4", src: props.url });
           player.load();
           player.play();
+        } else {
+          player = videojs(videoRef.value, {
+            controls: true,
+            autoplay: false,
+            preload: "auto",
+            sources: [{ type: "video/mp4", src: props.url }],
+          });
         }
       }
     };
@@ -57,7 +64,6 @@ export default defineComponent({
 
     return {
       videoRef,
-      setupPlayer,
     };
   },
 });
