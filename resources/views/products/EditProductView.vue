@@ -226,7 +226,9 @@ import {
   reactive,
 } from "vue";
 import { useStore } from "vuex";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
+
+import { save as saveToStore } from "../../ts/local-storage";
 
 import router from "../../ts/router";
 
@@ -383,8 +385,13 @@ export default defineComponent({
       };
 
       editProduct(props.productId, editedProductRecord)
-        .then((responseObject) => {
-          console.log("responseObject ==> ", responseObject);
+        .then((response: any) => {
+          saveToStore("latest_notif", {
+            type: "update_product_notif",
+            is_triggered: false,
+            message: response.message,
+          });
+
           router.push({
             name: "products",
           });

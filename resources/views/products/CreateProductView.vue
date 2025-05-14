@@ -14,6 +14,17 @@
   </header>
 
   <div
+    v-if="errorMessages.length"
+    class="flex w-full items-center justify-center"
+  >
+    <ul class="list-disc">
+      <li v-for="(item, index) in errorMessages" class="text-gray-950">
+        <span class="text-red-400">{{ item }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <div
     class="relative mx-auto my-10 flex h-full max-w-4xl items-center justify-center rounded-lg bg-white shadow-lg"
   >
     <div class="absolute top-0 right-0 flex w-full justify-between px-8 pt-4">
@@ -222,6 +233,8 @@ import { defineComponent, computed, ref, watch, reactive } from "vue";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 
+import { save as saveToStore } from "../../ts/local-storage";
+
 import router from "../../ts/router";
 
 import { IProduct } from "../../ts/models/IProduct";
@@ -265,6 +278,8 @@ export default defineComponent({
       datetime: "",
       product_images: [],
     });
+
+    const errorMessages = ref([]);
 
     const isNextStepBtnDisabled = computed(() => {
       if (currentStep.value === 0 && step1.value === false) {
@@ -350,14 +365,55 @@ export default defineComponent({
       };
 
       addProduct(newProductRecord)
-        .then((response) => {
+        .then((response: any) => {
+          saveToStore("is_created_new_product_notif_triggered", {
+            is_triggered: false,
+            message: response.message,
+          });
+
           router.push({
             name: "products",
           });
         })
         .catch((error) => {
-          console.log("error in saving new product", error);
+          if (error.status === 422 && error.response?.data?.errors) {
+            let errors: any;
+            let imageErrors: any;
+
+            errors = error.response.data.errors;
+
+            errors.name && collectErrors(errors.name);
+            errors.category && collectErrors(errors.category);
+            errors.description && collectErrors(errors.description);
+
+            imageErrors = normalizeImageErrors(error.response.data.errors);
+
+            collectErrors(imageErrors[0]);
+          }
         });
+    };
+
+    const collectErrors = (errors) => {
+      errors.forEach((err) => {
+        errorMessages.value.push(err);
+      });
+    };
+
+    const normalizeImageErrors = (errors) => {
+      const imageErrors: Record<number, string[]> = {};
+
+      for (const key in errors) {
+        if (key.startsWith("product_images.")) {
+          const match = key.match(/^product_images\.(\d+)/);
+          if (match) {
+            const index = parseInt(match[1]);
+            if (!imageErrors[index]) imageErrors[index] = [];
+            imageErrors[index].push(...errors[key]);
+          }
+        }
+      }
+
+      return imageErrors;
     };
 
     const goBack = () => {
@@ -424,6 +480,8 @@ export default defineComponent({
       currentStep,
       form,
       isNextStepBtnDisabled,
+
+      errorMessages,
 
       files,
       fileInputRef,

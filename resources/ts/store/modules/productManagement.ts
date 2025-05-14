@@ -2,14 +2,21 @@ import { Commit } from "vuex";
 import { GlobalState } from "../types";
 import { loadProducts, loadProduct } from "../../api/products";
 
-// 🆕 Default state factory function
-const getDefaultState = (): GlobalState => ({
-  users: [],
-  user: null,
+const getDefaultState = () => ({
   products: [],
   product: null,
-  pagination: [],
-  productPageFilters: [],
+  pagination: {
+    current_page: 1,
+    next_page_url: "",
+    prev_page_url: "",
+    per_page: 10,
+    total_items: 0,
+    total_pages: 0,
+  },
+  filters: {
+    keywords: "",
+    category: "",
+  },
 });
 
 export default {
@@ -18,27 +25,27 @@ export default {
   state: getDefaultState(),
 
   mutations: {
-    RESET_STATE(state: GlobalState) {
+    RESET_STATE(state) {
       Object.assign(state, getDefaultState());
     },
 
-    SET_PRODUCTS(state: GlobalState, context: any) {
+    SET_PRODUCTS(state, context: any) {
       state.products = context;
     },
 
-    SET_PRODUCT_TO_VIEW(state: GlobalState, context: any) {
+    SET_PRODUCT_TO_VIEW(state, context: any) {
       state.product = context;
     },
 
-    SET_PRODUCT_TO_UPDATE(state: GlobalState, context: any) {
+    SET_PRODUCT_TO_UPDATE(state, context: any) {
       state.product = context;
     },
 
-    ADD_PRODUCT(state: GlobalState, context: any) {
+    ADD_PRODUCT(state, context: any) {
       console.log("ADD_PRODUCT", state.products, context);
     },
 
-    UPDATE_PRODUCT(state: GlobalState, context: any) {
+    UPDATE_PRODUCT(state, context: any) {
       let index = state.products.findIndex((x) => x.id === context.id);
 
       state.products[index] = {
@@ -51,93 +58,113 @@ export default {
       };
     },
 
-    DELETE_PRODUCT(state: GlobalState, context: string) {
+    DELETE_PRODUCT(state, context: string) {
       state.products = state.products.filter((x) => x.id !== context);
     },
 
-    SET_PAGINATION(state: GlobalState, context: any) {
+    SET_PAGINATION(state, context: any) {
       state.pagination = context;
     },
 
-    SET_PRODUCT_PAGE_FILTERS(state: GlobalState, context: any) {
-      state.productPageFilters = context;
+    SET_CURRENT_PAGE(state, page) {
+      state.pagination.current_page = page;
+    },
+
+    SET_KEYWORDS(state, keywords) {
+      state.filters.keywords = keywords;
+    },
+
+    SET_CATEGORY(state, category) {
+      state.filters.category = category;
     },
   },
 
   actions: {
-    async resetSate({ commit }: { commit: Commit }) {
+    async resetSate({ commit }) {
       commit("RESET_STATE");
     },
 
-    async setProductPageFilters({ commit }: { commit: Commit }, payload: any) {
-      commit("SET_PRODUCT_PAGE_FILTERS", payload);
-    },
-
-    async setProducts({ commit }: { commit: Commit }, payload: any) {
-      let data: any = await loadProducts(payload);
-
-      commit("SET_PRODUCTS", data.data);
-
-      let filters = {
-        keywords: data.data.keywords || "",
-        category: data.data.category || "",
-        current_page: data.pagination.current_page,
-        per_page: data.pagination.per_page,
+    async setProducts({ commit, state }) {
+      let payload = {
+        keywords: state.filters.keywords,
+        category: state.filters.category,
+        page: state.pagination.current_page,
+        per_page: state.pagination.per_page,
       };
-      commit("SET_PRODUCT_PAGE_FILTERS", filters);
-      commit("SET_PAGINATION", data.pagination);
+
+      let response: any = await loadProducts(payload);
+
+      commit("SET_PRODUCTS", response.data.data);
+      commit("SET_PAGINATION", response.data.pagination);
     },
 
-    async addProduct({ commit }: { commit: Commit }, payload: any) {
+    setKeywords({ commit, dispatch }, keyword) {
+      commit("SET_KEYWORDS", keyword);
+      commit("SET_CURRENT_PAGE", 1);
+      dispatch("setProducts");
+    },
+
+    setCategory({ commit, dispatch }, category) {
+      commit("SET_CATEGORY", category);
+      commit("SET_CURRENT_PAGE", 1);
+      dispatch("setProducts");
+    },
+
+    changePage({ commit, dispatch }, page) {
+      commit("SET_CURRENT_PAGE", page);
+      dispatch("setProducts");
+    },
+
+    async addProduct({ commit }, payload: any) {
       commit("ADD_PRODUCT", payload);
     },
 
-    async setProductToView({ commit }: { commit: Commit }, payload: any) {
+    async setProductToView({ commit }, payload: any) {
       if (Object.keys(payload.productToView).length === 1) {
-        let product: any = await loadProduct(payload.productToView.id);
-        commit("SET_PRODUCT_TO_VIEW", product);
+        let response: any = await loadProduct(payload.productToView.id);
+        commit("SET_PRODUCT_TO_VIEW", response.data);
       } else {
         commit("SET_PRODUCT_TO_VIEW", payload.productToView);
       }
     },
 
-    async setProductToUpdate({ commit }: { commit: Commit }, payload: any) {
+    async setProductToUpdate({ commit }, payload: any) {
       if (Object.keys(payload.productToUpdate).length === 1) {
-        let product: any = await loadProduct(payload.productToUpdate.id);
-        commit("SET_PRODUCT_TO_UPDATE", product);
+        let response: any = await loadProduct(payload.productToUpdate.id);
+        commit("SET_PRODUCT_TO_UPDATE", response.data);
       } else {
         commit("SET_PRODUCT_TO_UPDATE", payload.productToUpdate);
       }
     },
 
-    async updateProduct({ commit }: { commit: Commit }, payload: any) {
+    async updateProduct({ commit }, payload: any) {
       commit("UPDATE_PRODUCT", payload);
     },
 
-    async deleteProduct({ commit }: { commit: Commit }, payload: any) {
+    async deleteProduct({ commit }, payload: any) {
       commit("DELETE_PRODUCT", payload);
     },
   },
 
   getters: {
-    getProducts(state: GlobalState) {
+    getProducts(state) {
       return state.products;
     },
 
-    getProductToView(state: GlobalState) {
+    getProductToView(state) {
       return state.product;
     },
 
-    getProductToUpdate(state: GlobalState) {
+    getProductToUpdate(state) {
       return state.product;
     },
 
-    getPagination(state: GlobalState) {
+    getPagination(state) {
       return state.pagination;
     },
 
-    getProductPageFilters(state: GlobalState) {
-      return state.productPageFilters;
+    getFilters(state) {
+      return state.filters;
     },
   },
 };

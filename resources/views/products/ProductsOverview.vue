@@ -21,8 +21,8 @@
     :PRODUCT_NAME="PRODUCT_NAME"
   />
 
-  <div class="flex justify-between pt-4 pb-4">
-    <div class="flex flex-wrap items-center space-x-1">
+  <div class="overflow-y-auto">
+    <div class="mb-4 flex flex-wrap items-center gap-2">
       <input
         v-model="keywords"
         type="text"
@@ -57,132 +57,137 @@
           <Icon icon="mdi:search" class="text-xl" />
         </button>
       </div>
+
+      <div class="items-center space-x-3">
+        <button
+          @click.stop
+          @click="goToCreateProductPage()"
+          class="flex items-center gap-2 rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+        >
+          Add New
+          <Icon icon="mdi:plus" class="text-xl hover:text-blue-400" />
+        </button>
+      </div>
     </div>
-    <div class="items-center space-x-3">
+
+    <table class="min-w-full border border-gray-300 text-black">
+      <thead class="bg-thbg-light dark:bg-thbg-dark border-gray-300">
+        <tr>
+          <th class="p-3 text-left">#</th>
+          <th class="p-3 text-left">Name</th>
+          <th class="p-3 text-left">Category</th>
+          <th class="p-3 text-left">Description</th>
+          <th class="p-3 text-left">Images</th>
+          <th class="p-3 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="">
+        <tr
+          v-for="(item, index) in products"
+          :key="index"
+          class="border-b border-gray-300"
+        >
+          <td class="p-3">{{ index + 1 }}</td>
+          <td class="p-3">{{ item.name }}</td>
+          <td class="p-3">{{ item.category }}</td>
+          <td class="p-3">{{ item.description }}</td>
+          <td class="p-3">
+            <button
+              v-if="item.product_images && item.product_images.length > 0"
+              @click.stop
+              @click="openViewImageModal(item.product_images)"
+              href="#"
+              class="inline-flex items-center rounded-2xl bg-blue-600 px-2 py-1 text-white hover:bg-blue-700"
+            >
+              View Images
+            </button>
+          </td>
+          <td class="p-3">
+            <div class="flex space-x-4 text-center">
+              <button>
+                <Icon
+                  @click.stop
+                  @click="goToProductDetailsPage(item.id)"
+                  icon="mdi:show"
+                  class="text-xl text-blue-400 hover:text-blue-500"
+                />
+              </button>
+              <button @click.stop @click="goToEditProductPage(item.id)">
+                <Icon
+                  icon="material-symbols:edit"
+                  class="text-xl text-yellow-400 hover:text-yellow-500"
+                />
+              </button>
+              <button @click.stop @click="openDeleteModal(item.id, item.name)">
+                <Icon
+                  icon="material-symbols:delete"
+                  class="text-xl text-red-400 hover:text-red-500"
+                />
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr v-if="products?.length === 0">
+          <td colspan="6" class="text-center">No products found.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="flex justify-end space-x-1 pt-2 pr-2" v-if="pagination">
+      <span class="text-md pt-2 text-gray-600">
+        Page {{ pagination.current_page }} of {{ pagination.total_pages }}
+      </span>
+
       <button
-        @click.stop
-        @click="goToCreateProductPage()"
-        class="flex items-center gap-2 rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+        @click="goToPage(currentPage - 1)"
+        :disabled="!pagination.prev_page_url"
+        class="rounded border border-gray-800 px-2 py-1 text-sm text-gray-600 hover:bg-gray-300 disabled:bg-gray-400 disabled:text-white"
       >
-        Add New
-        <Icon icon="mdi:plus" class="text-xl hover:text-blue-400" />
+        <Icon icon="fa:angle-left" />
+      </button>
+
+      <button
+        v-for="page in pagination.total_pages"
+        :key="page"
+        @click="goToPage(page)"
+        class="rounded border border-gray-800 px-3 py-1 text-sm text-gray-600 hover:bg-gray-300 disabled:bg-gray-400 disabled:text-white"
+        :class="[
+          page === pagination.current_page ? 'bg-blue-500 text-white' : '',
+        ]"
+      >
+        {{ page }}
+      </button>
+
+      <button
+        @click="goToPage(currentPage + 1)"
+        :disabled="!pagination.next_page_url"
+        class="rounded border border-gray-800 px-2 py-1 text-sm text-gray-600 hover:bg-gray-300 disabled:bg-gray-400 disabled:text-white"
+      >
+        <Icon icon="fa:angle-right" />
       </button>
     </div>
-  </div>
-  <table class="min-w-full border border-gray-300 text-black">
-    <thead class="bg-thbg-light dark:bg-thbg-dark border-gray-300">
-      <tr>
-        <th class="p-3 text-left">#</th>
-        <th class="p-3 text-left">Name</th>
-        <th class="p-3 text-left">Category</th>
-        <th class="p-3 text-left">Description</th>
-        <th class="p-3 text-left">Images</th>
-        <th class="p-3 text-left">Actions</th>
-      </tr>
-    </thead>
-    <tbody class="">
-      <tr
-        v-for="(item, index) in products"
-        :key="index"
-        class="border-b border-gray-300"
-      >
-        <td class="p-3">{{ index + 1 }}</td>
-        <td class="p-3">{{ item.name }}</td>
-        <td class="p-3">{{ item.category }}</td>
-        <td class="p-3">{{ item.description }}</td>
-        <td class="p-3">
-          <button
-            v-if="item.product_images && item.product_images.length > 0"
-            @click.stop
-            @click="openViewImageModal(item.product_images)"
-            href="#"
-            class="inline-flex items-center rounded-2xl bg-blue-600 px-2 py-1 text-white hover:bg-blue-700"
-          >
-            View Images
-          </button>
-        </td>
-        <td class="p-3">
-          <div class="flex space-x-4 text-center">
-            <button>
-              <Icon
-                @click.stop
-                @click="goToProductDetailsPage(item.id)"
-                icon="mdi:show"
-                class="text-xl text-blue-400 hover:text-blue-500"
-              />
-            </button>
-            <button @click.stop @click="goToEditProductPage(item.id)">
-              <Icon
-                icon="material-symbols:edit"
-                class="text-xl text-yellow-400 hover:text-yellow-500"
-              />
-            </button>
-            <button @click.stop @click="openDeleteModal(item.id, item.name)">
-              <Icon
-                icon="material-symbols:delete"
-                class="text-xl text-red-400 hover:text-red-500"
-              />
-            </button>
-          </div>
-        </td>
-      </tr>
-      <tr v-if="products?.length === 0">
-        <td colspan="6" class="text-center">No products found.</td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="flex justify-end space-x-1 pt-2 pr-2" v-if="pagination">
-    <span class="text-md pt-2 text-gray-600">
-      Page {{ pagination.current_page }} of {{ pagination.total_pages }}
-    </span>
-
-    <button
-      @click="goToPage(currentPage - 1)"
-      :disabled="!pagination.prev_page_url"
-      class="rounded border border-gray-800 px-2 py-1 text-sm text-gray-600 hover:bg-gray-300 disabled:bg-gray-400 disabled:text-white"
-    >
-      <Icon icon="fa:angle-left" />
-    </button>
-
-    <button
-      v-for="page in pagination.total_pages"
-      :key="page"
-      @click="goToPage(page)"
-      class="rounded border border-gray-800 px-3 py-1 text-sm text-gray-600 hover:bg-gray-300 disabled:bg-gray-400 disabled:text-white"
-      :class="[
-        page === pagination.current_page ? 'bg-blue-500 text-white' : '',
-      ]"
-    >
-      {{ page }}
-    </button>
-
-    <button
-      @click="goToPage(currentPage + 1)"
-      :disabled="!pagination.next_page_url"
-      class="rounded border border-gray-800 px-2 py-1 text-sm text-gray-600 hover:bg-gray-300 disabled:bg-gray-400 disabled:text-white"
-    >
-      <Icon icon="fa:angle-right" />
-    </button>
   </div>
 </template>
 
 <script lang="ts">
 import {
   defineComponent,
-  computed,
   ref,
   onMounted,
   toRaw,
   onUnmounted,
+  watch,
 } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
-import { editProduct } from "../../ts/api/products";
+import { save as saveToStore } from "../../ts/local-storage";
+
 import { deleteProduct } from "../../ts/api/products";
 
 import ViewImagesModal from "./screens/ViewImagesModal.vue";
 import ConfirmDeleteModal from "./screens/ConfirmDeleteModal.vue";
+
+import { useProducts } from "../../ts/composables/useProducts";
 
 export default defineComponent({
   components: {
@@ -191,8 +196,22 @@ export default defineComponent({
   },
 
   setup() {
-    const store = useStore();
     const router = useRouter();
+
+    const {
+      getProducts,
+      pagination,
+      filters,
+
+      setKeywords,
+      setCategory,
+      fetchProducts,
+      changePage,
+      setProductToView,
+      setProductToUpdate,
+
+      triggerSuccessNotification,
+    } = useProducts();
 
     const categories = [
       "Electronics",
@@ -202,10 +221,13 @@ export default defineComponent({
       "Sports and Outdoors",
     ];
 
-    const keywords = ref("");
-    const category = ref("");
-    const currentPage = ref(1);
-    const perPage = ref(10);
+    const products = getProducts;
+
+    const keywords = ref(filters.value?.keywords || "");
+    const category = ref(filters.value?.category || "");
+
+    const currentPage = ref(pagination.value?.current_page || 1);
+    const perPage = ref(pagination.value?.per_page || 10);
 
     const productIdToUpdate = ref("");
     const productToUpdate = ref();
@@ -217,61 +239,16 @@ export default defineComponent({
     const PRODUCT_NAME = ref("");
     const productIdToDelete = ref("");
 
-    const products = computed(
-      () => store.getters["productManagement/getProducts"],
-    );
-
-    const pagination = computed(
-      () => store.getters["productManagement/getPagination"],
-    );
-
-    const updateList = async (triggerFrom, productPageFilters?) => {
-      let params;
-
-      if (triggerFrom === "fromOtherPage") {
-        params = {
-          keywords: productPageFilters.keywords || keywords.value,
-          category: productPageFilters.category || category.value,
-          page: productPageFilters.current_page || currentPage.value,
-          per_page: productPageFilters.per_page || perPage.value,
-        };
-      } else {
-        params = {
-          keywords: keywords.value,
-          category: category.value,
-          page: triggerFrom === "searchProduct" ? 1 : currentPage.value,
-          per_page: perPage.value,
-        };
-      }
-
-      console.log("POV trigger from => " + triggerFrom);
-
-      let data: any = await Promise.allSettled([
-        store.dispatch("productManagement/setProducts", params),
-      ]);
-      return data;
-    };
-
-    const setProductFiltersFunction = () => {
-      let productPageFilters =
-        store.getters["productManagement/getProductPageFilters"];
-      store.dispatch("productManagement/setProductPageFilters", {
-        keywords: productPageFilters?.keywords || "",
-        category: productPageFilters?.category || "",
-        current_page: productPageFilters?.current_page || 1,
-        per_page: productPageFilters?.per_page || 10,
-      });
+    const updateList = async () => {
+      fetchProducts();
     };
 
     const searchProduct = async () => {
-      updateList("searchProduct");
-      setProductFiltersFunction();
+      updateList();
     };
 
     // start: create product function
     const goToCreateProductPage = () => {
-      setProductFiltersFunction();
-
       router.push({
         name: "create-product",
       });
@@ -282,11 +259,9 @@ export default defineComponent({
     const goToProductDetailsPage = (id: string) => {
       let productToView = toRaw(products.value).find((x: any) => x.id === id);
 
-      store.dispatch("productManagement/setProductToView", {
+      setProductToView({
         productToView: productToView,
       });
-
-      setProductFiltersFunction();
 
       router.push({
         name: "view-product",
@@ -302,31 +277,13 @@ export default defineComponent({
         (x: any) => x.id === id,
       );
 
-      store.dispatch("productManagement/setProductToUpdate", {
+      setProductToUpdate({
         productToUpdate: productToUpdate.value,
       });
-
-      setProductFiltersFunction();
 
       router.push({
         name: "edit-product",
         params: { productId: productIdToUpdate.value },
-      });
-    };
-
-    const handleUpdateProduct = (editedProduct: any) => {
-      let id = productIdToUpdate.value;
-
-      // calls Edit Product API
-      editProduct(productIdToUpdate.value, editedProduct).then(() => {
-        // updateList();
-        // getProducts()
-        productIdToUpdate.value = "";
-        productToUpdate.value = ref();
-        store.dispatch("productManagement/updateProduct", {
-          editedProduct,
-          id,
-        });
       });
     };
     // end: edit product function
@@ -336,8 +293,6 @@ export default defineComponent({
       productIdToDelete.value = id;
       PRODUCT_NAME.value = name;
       isDeleteModalVisible.value = true;
-
-      setProductFiltersFunction();
     };
 
     const closeDeleteModal = () => {
@@ -346,13 +301,17 @@ export default defineComponent({
 
     const handleDeleteProduct = () => {
       deleteProduct(productIdToDelete.value)
-        .then(() => {
-          let id = productIdToDelete.value;
-          // store.dispatch("productManagement/deleteProduct", id);
+        .then((response: any) => {
           productIdToDelete.value = "";
 
+          saveToStore("latest_notif", {
+            type: "delete_product_notif",
+            is_triggered: false,
+            message: response.message,
+          });
+          triggerSuccessNotification();
           closeDeleteModal();
-          updateList("handleDeleteProduct");
+          updateList();
         })
         .catch((error) => {
           console.log("error in deleting product", error);
@@ -373,25 +332,36 @@ export default defineComponent({
     // end: View Images Function
 
     const goToPage = (page) => {
-      if (page >= 1 && page <= pagination.value.total_pages) {
-        currentPage.value = page;
-      }
+      // if (page >= 1 && page <= pagination.value.total_pages) {
+      //   currentPage.value = page;
+      // }
 
-      updateList("goToPage");
+      changePage(page);
     };
 
     onMounted(async () => {
-      let productPageFilters =
-        store.getters["productManagement/getProductPageFilters"];
-      if (productPageFilters) {
-        setProductFiltersFunction();
-        updateList("fromOtherPage", productPageFilters);
-      } else {
-        updateList("onMount");
-      }
+      updateList();
+
+      triggerSuccessNotification();
     });
 
     onUnmounted(() => {});
+
+    watch(
+      () => keywords,
+      () => {
+        setKeywords(keywords.value);
+      },
+      { deep: true },
+    );
+
+    watch(
+      () => category,
+      () => {
+        setCategory(category.value);
+      },
+      { deep: true },
+    );
 
     return {
       PRODUCT_NAME,
@@ -416,7 +386,6 @@ export default defineComponent({
       goToCreateProductPage,
       goToProductDetailsPage,
       goToEditProductPage,
-      handleUpdateProduct,
       openDeleteModal,
       closeDeleteModal,
       openViewImageModal,

@@ -53,10 +53,8 @@ router.beforeEach(async (to, from, next) => {
   const isLoggedIn = !!localStorage.getItem("logged");
 
   if (!isLoggedIn && to.name !== "dashboard") {
-    console.log("here");
     next("/");
   } else if (to.path === "/" && isLoggedIn) {
-    console.log("there");
     next("/products");
   } else {
     next();

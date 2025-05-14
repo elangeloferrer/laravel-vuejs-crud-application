@@ -7,7 +7,8 @@ const state = (): GlobalState => {
     products: [],
     product: null as any,
 
-    pagination: [],
+    pagination: {} as any,
+    productPageFilters: [],
   };
 };
 

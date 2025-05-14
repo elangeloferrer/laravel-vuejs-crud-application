@@ -6,7 +6,7 @@
     >
       <!-- Left Side -->
       <div class="flex items-center space-x-3">
-        <h1 class="font-semibold">Praxxys' Backend Examination</h1>
+        <h1 class="font-semibold">CRUD Application</h1>
       </div>
     </nav>
 
@@ -15,7 +15,7 @@
 
       <aside
         :class="[
-          'flex h-screen flex-col justify-between border-r border-gray-400 bg-white p-4 shadow-md transition-[width] duration-100',
+          'flex flex-col justify-between border-r border-gray-400 bg-white p-4 shadow-md transition-[width] duration-100',
           isSidebarOpen ? 'w-48' : 'w-16',
         ]"
       >
@@ -67,7 +67,7 @@
 
       <!-- Main Content -->
       <div
-        class="flex-1 overflow-y-auto bg-gray-100 p-4 shadow-md"
+        class="flex-1 overflow-auto bg-gray-100 p-4 shadow-md"
         style="max-height: calc(120vh - 10rem)"
       >
         <router-view :key="route.path"></router-view>
